@@ -1,0 +1,78 @@
+{
+  "CM": [
+    {
+      "modelo": "VIBXPERT II",
+      "codigo": "VIB 5310-1E"
+    },
+    {
+      "modelo": "VIBXPERT",
+      "codigo": "VIB 5360-1E"
+    },
+    {
+      "modelo": "VIBXPERT EX",
+      "codigo": "VIB 5360-1EEX"
+    },
+    {
+      "modelo": "VIBSCANNER 2",
+      "codigo": "VIB 5210 / VIB 5212"
+    },
+    {
+      "modelo": "VIBSCANNER 2 EX",
+      "codigo": "VIB 5210EX / VIB 5212EX"
+    },
+    {
+      "modelo": "VIBSCANNER",
+      "codigo": "VIB 5460"
+    },
+    {
+      "modelo": "VIBSCANNER EX",
+      "codigo": "VIB 5460EX"
+    }
+  ],
+  "ALI": [
+    {
+      "modelo": "ROTALIGN TOUCH",
+      "codigo": "ALI 50000"
+    },
+    {
+      "modelo": "ROTALIGN TOUCH EX",
+      "codigo": "ALI 51000Z1"
+    },
+    {
+      "modelo": "OPTALIGN TOUCH",
+      "codigo": "ALI 51000"
+    },
+    {
+      "modelo": "SHAFTALIGN TOUCH",
+      "codigo": "ALI 26000"
+    },
+    {
+      "modelo": "OPTALIGN SMART EX",
+      "codigo": "ALI 12000BEX"
+    },
+    {
+      "modelo": "OPTALIGN SMART",
+      "codigo": "ALI 12000"
+    },
+    {
+      "modelo": "OPTALIGN SMART RS",
+      "codigo": "ALI 12004RS"
+    },
+    {
+      "modelo": "OPTALIGN SMART RS5",
+      "codigo": "ALI 12015RS5R"
+    },
+    {
+      "modelo": "SHAFTALIGN OS3",
+      "codigo": "ALI 21003"
+    },
+    {
+      "modelo": "SHAFTALIGN OS3 BT",
+      "codigo": "ALI 21003BR"
+    },
+    {
+      "modelo": "ROTALIGN ULTRA IS",
+      "codigo": "ALI 40000"
+    }
+  ]
+}
