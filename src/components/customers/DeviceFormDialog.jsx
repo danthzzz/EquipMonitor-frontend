@@ -42,6 +42,7 @@ export default function DeviceFormDialog({ open, initialValues, onClose, onSubmi
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    event.stopPropagation();
     onSubmit(values);
   };
 
