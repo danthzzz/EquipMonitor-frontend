@@ -23,6 +23,7 @@ export default function PinDetails({ pin }) {
       </Stack>
       <Grid container spacing={2}>
         <Field label="Série" value={pin.serie} />
+        <Field label="Código" value={pin.codigo} />
         <Field label="Cliente" value={pin.cliente} />
         <Field label="Ordem de Serviço" value={pin.OS} />
         <Field label="CTF 1" value={pin.ctf1} />

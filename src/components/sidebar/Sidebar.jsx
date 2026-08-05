@@ -7,6 +7,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
+import mgsLight from '../../assets/MGS-LIGHT.png';
+import mgsDark from '../../assets/MGS-DARK.png';
 import IconButton from '@mui/material/IconButton';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -41,9 +43,12 @@ export default function Sidebar({ onNavigate }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Box sx={{ px: 2, py: 2 }}>
-        <Typography variant="subtitle1" fontWeight={700}>
-          EquipMonitor
-        </Typography>
+        <Box
+          component="img"
+          src={mode === 'dark' ? mgsDark : mgsLight}
+          alt="PRÜFTECHNIK MGS"
+          sx={{ height: 80, width: 'auto', display: 'block' }}
+        />
       </Box>
       <Divider />
       <List sx={{ flexGrow: 1 }}>
