@@ -19,6 +19,7 @@ import EmptyState from '../common/EmptyState';
 import { getRowSx, isPinFinalizado } from '../../utils/pinUtils';
 import { formatDate } from '../../utils/dateUtils';
 import devices from '../../data/devices.json';
+import navigate from '../../utils/navigate';
 
 const COLUMNS = 8;
 
@@ -82,7 +83,7 @@ export default function PinsTable({ pins, loading, statusFilter, onRowClick, onD
                   <TableCell>{formatDate(pin.entryDate)}</TableCell>
                   <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                     <Tooltip title="Editar">
-                      <IconButton size="small" color="primary" onClick={() => onEdit(pin)}>
+                      <IconButton size="small" color="primary" onClick={() => navigate(`/update/${pin._id}`)}>
                         <EditIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
