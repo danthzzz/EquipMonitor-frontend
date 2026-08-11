@@ -31,6 +31,29 @@ const getDesignTokens = (mode) => ({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        '*': {
+          scrollbarWidth: 'thin',
+          scrollbarColor:
+            mode === 'light' ? 'rgba(0,0,0,0.25) transparent' : 'rgba(255,255,255,0.25) transparent',
+        },
+        '*::-webkit-scrollbar': {
+          width: 8,
+          height: 8,
+        },
+        '*::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+        '*::-webkit-scrollbar-thumb': {
+          backgroundColor: mode === 'light' ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.25)',
+          borderRadius: 8,
+        },
+        '*::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: mode === 'light' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.4)',
+        },
+      },
+    },
     MuiPaper: {
       styleOverrides: {
         root: { backgroundImage: 'none' },

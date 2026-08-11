@@ -12,13 +12,15 @@ import { useTheme } from '@mui/material/styles';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import StatusChip from '../common/StatusChip';
 import Loading from '../common/Loading';
 import EmptyState from '../common/EmptyState';
 import { getRowSx, isPinFinalizado } from '../../utils/pinUtils';
 import { formatDate } from '../../utils/dateUtils';
+import devices from '../../data/devices.json';
 
-const COLUMNS = 7;
+const COLUMNS = 8;
 
 export default function PinsTable({ pins, loading, statusFilter, onRowClick, onDelete, onReset, onFinalize }) {
   const theme = useTheme();
@@ -34,11 +36,13 @@ export default function PinsTable({ pins, loading, statusFilter, onRowClick, onD
         <TableHead>
           <TableRow>
             <TableCell>Equipamento</TableCell>
+            <TableCell>COD</TableCell>
             <TableCell>Série</TableCell>
             <TableCell>Cliente</TableCell>
+            <TableCell>NF</TableCell>
             <TableCell>OS</TableCell>
             <TableCell>Status</TableCell>
-            <TableCell>Última Atualização</TableCell>
+            <TableCell>Data de Entrada</TableCell>
             <TableCell align="right">Ações</TableCell>
           </TableRow>
         </TableHead>
@@ -57,22 +61,31 @@ export default function PinsTable({ pins, loading, statusFilter, onRowClick, onD
           ) : (
             pins.map((pin) => {
               const finalizado = isPinFinalizado(pin);
+              const device = Object.values(devices)
+                .flat()
+                .find(item => item.modelo === pin.equipament)?.codigo || '—';
               return (
                 <TableRow
                   key={pin._id}
                   hover
-                  onClick={() => onRowClick(pin._id)}
                   sx={{ cursor: 'pointer', ...getRowSx(pin, theme) }}
                 >
-                  <TableCell>{pin.equipament}</TableCell>
+                  <TableCell onClick={() => onRowClick(pin._id)}>{pin.equipament}</TableCell>
+                  <TableCell>{device || '—'}</TableCell>
                   <TableCell>{pin.serie}</TableCell>
-                  <TableCell>{pin.cliente}</TableCell>
+                  <TableCell onClick={() => onRowClick(pin._id)}>{pin.cliente}</TableCell>
+                  <TableCell>{pin.nf}</TableCell>
                   <TableCell>{pin.OS || '—'}</TableCell>
                   <TableCell>
                     <StatusChip status={pin.status} />
                   </TableCell>
-                  <TableCell>{formatDate(pin.updatedAt)}</TableCell>
+                  <TableCell>{formatDate(pin.entryDate)}</TableCell>
                   <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                    <Tooltip title="Editar">
+                      <IconButton size="small" color="primary" onClick={() => onEdit(pin)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                     {statusFilter === 'Em Aberto' && !finalizado && (
                       <Tooltip title="Finalizar">
                         <IconButton size="small" color="success" onClick={() => onFinalize(pin, 'Finalizado')}>
@@ -87,6 +100,7 @@ export default function PinsTable({ pins, loading, statusFilter, onRowClick, onD
                         </IconButton>
                       </Tooltip>
                     )}
+
                     <Tooltip title="Excluir">
                       <IconButton size="small" color="error" onClick={() => onDelete(pin)}>
                         <DeleteIcon fontSize="small" />

@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import StatusChip from '../common/StatusChip';
+import devices from '../../data/devices.json';
 import { NF_STATUS_SEMANTIC } from '../../constants/colors';
 
 function Field({ label, value }) {
@@ -15,6 +16,13 @@ function Field({ label, value }) {
 }
 
 export default function PinDetails({ pin }) {
+  
+const device = Object.values(devices)
+  .flat()
+  .find(item => item.modelo === pin.equipament);
+
+const codigo = device?.codigo;
+
   return (
     <Paper sx={{ p: 3 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
@@ -23,7 +31,7 @@ export default function PinDetails({ pin }) {
       </Stack>
       <Grid container spacing={2}>
         <Field label="Série" value={pin.serie} />
-        <Field label="Código" value={pin.codigo} />
+        <Field label="Código" value={codigo} />
         <Field label="Cliente" value={pin.cliente} />
         <Field label="Ordem de Serviço" value={pin.OS} />
         <Field label="CTF 1" value={pin.ctf1} />
