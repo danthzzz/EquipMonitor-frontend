@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useTheme } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -19,12 +20,12 @@ import EmptyState from '../common/EmptyState';
 import { getRowSx, isPinFinalizado } from '../../utils/pinUtils';
 import { formatDate } from '../../utils/dateUtils';
 import devices from '../../data/devices.json';
-import navigate from '../../utils/navigate';
 
 const COLUMNS = 8;
 
 export default function PinsTable({ pins, loading, statusFilter, onRowClick, onDelete, onReset, onFinalize }) {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <TableContainer sx={{ maxHeight: '70vh' }}>

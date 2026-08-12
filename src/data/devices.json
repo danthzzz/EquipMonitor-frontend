@@ -82,5 +82,19 @@
       "modelo": "SENSOR SENSALIGN 7",
       "codigo": "ALI4910"
     }
+  ],
+  "OEM": [
+    {
+      "modelo": "SMART BALANCER",
+      "codigo": "VIB53101E"
+    },
+    {
+      "modelo": "SCHAEFFLER EQUILIGN 2",
+      "codigo": "ALI26000"
+    },
+    {
+      "modelo": "FLUKE 831",
+      "codigo": "ALI26000"
+    }
   ]
 }
