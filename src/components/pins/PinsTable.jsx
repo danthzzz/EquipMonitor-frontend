@@ -10,16 +10,12 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import StatusChip from '../common/StatusChip';
 import Loading from '../common/Loading';
 import EmptyState from '../common/EmptyState';
-import { getRowSx, isPinFinalizado } from '../../utils/pinUtils';
+import { getRowSx, getPinDeviceCode, getPinRowActions } from '../../utils/pinUtils';
 import { formatDate } from '../../utils/dateUtils';
-import devices from '../../data/devices.json';
+import { PIN_ACTION_META, getPinActionHandler } from './pinActionMeta';
 
 const COLUMNS = 8;
 
@@ -62,10 +58,8 @@ export default function PinsTable({ pins, loading, statusFilter, onRowClick, onD
             </TableRow>
           ) : (
             pins.map((pin) => {
-              const finalizado = isPinFinalizado(pin);
-              const device = Object.values(devices)
-                .flat()
-                .find(item => item.modelo === pin.equipament)?.codigo || '—';
+              const device = getPinDeviceCode(pin.equipament);
+              const handlers = { onEdit: () => navigate(`/update/${pin._id}`), onFinalize, onReset, onDelete };
               return (
                 <TableRow
                   key={pin._id}
@@ -83,31 +77,16 @@ export default function PinsTable({ pins, loading, statusFilter, onRowClick, onD
                   </TableCell>
                   <TableCell>{formatDate(pin.entryDate)}</TableCell>
                   <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                    <Tooltip title="Editar">
-                      <IconButton size="small" color="primary" onClick={() => navigate(`/update/${pin._id}`)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    {statusFilter === 'Em Aberto' && !finalizado && (
-                      <Tooltip title="Finalizar">
-                        <IconButton size="small" color="success" onClick={() => onFinalize(pin, 'Finalizado')}>
-                          <CheckCircleIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    {finalizado && (
-                      <Tooltip title="Resetar">
-                        <IconButton size="small" color="warning" onClick={() => onReset(pin)}>
-                          <RestartAltIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-
-                    <Tooltip title="Excluir">
-                      <IconButton size="small" color="error" onClick={() => onDelete(pin)}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                    {getPinRowActions(pin, statusFilter).map((action) => {
+                      const { label, icon: Icon, color } = PIN_ACTION_META[action];
+                      return (
+                        <Tooltip key={action} title={label}>
+                          <IconButton size="small" color={color} onClick={getPinActionHandler(action, pin, handlers)}>
+                            <Icon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      );
+                    })}
                   </TableCell>
                 </TableRow>
               );

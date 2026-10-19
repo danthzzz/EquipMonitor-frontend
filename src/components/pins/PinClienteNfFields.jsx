@@ -32,13 +32,13 @@ export default function PinClienteNfFields({ values, onValuesChange, customers, 
             renderInput={(params) => <TextField {...params} label="Cliente" required fullWidth />}
           />
         </Grid>
-        <Grid item xs={12} md={3}>
-          <TextField label="Ordem de Serviço" fullWidth value={values.OS} onChange={handleChange('OS')} />
+        <Grid item xs={12} sm={6} md={3}>
+          <TextField label="Ordem de Serviço" fullWidth value={values.OS} onChange={handleChange('OS')} inputProps={{ inputMode: 'numeric' }} />
         </Grid>
-        <Grid item xs={12} md={3}>
-          <TextField label="Nota Fiscal" fullWidth value={values.nf} onChange={handleChange('nf')} />
+        <Grid item xs={12} sm={6} md={3}>
+          <TextField label="Nota Fiscal" fullWidth value={values.nf} onChange={handleChange('nf')} inputProps={{ inputMode: 'numeric' }} />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <FormControl fullWidth>
             <InputLabel>Status NF</InputLabel>
             <Select value={values.statusNf} label="Status NF" onChange={handleChange('statusNf')}>
@@ -48,7 +48,7 @@ export default function PinClienteNfFields({ values, onValuesChange, customers, 
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <TextField
             label="Data de Entrada"
             type="date"

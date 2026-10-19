@@ -1,11 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MainLayout from '../../layouts/MainLayout';
+import PageHeader from '../../components/common/PageHeader';
 import CustomerForm from '../../components/customers/CustomerForm';
 import { useCustomers } from '../../hooks/useCustomers';
 import { useSnackbar } from '../../context';
@@ -30,18 +28,13 @@ export default function UpdateCustomer() {
 
   return (
     <MainLayout>
-      <Stack direction="row" alignItems="center" spacing={1} mb={3}>
-        <IconButton onClick={() => navigate('/allcustomers')}>
-          <ArrowBackIcon />
-        </IconButton>
-        <Typography variant="h5" fontWeight={600}>Editar Cliente</Typography>
-      </Stack>
+      <PageHeader title="Editar Cliente" onBack={() => navigate('/allcustomers')} />
       {loading ? (
         <CircularProgress />
       ) : !customer ? (
         <Typography>Cliente não encontrado.</Typography>
       ) : (
-        <Paper sx={{ p: 3 }}>
+        <Paper sx={{ p: { xs: 2, md: 3 } }}>
           <CustomerForm initialValues={customer} submitLabel="Salvar" onSubmit={handleSubmit} />
         </Paper>
       )}

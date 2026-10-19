@@ -54,6 +54,14 @@ const getDesignTokens = (mode) => ({
         },
       },
     },
+    MuiInputBase: {
+      styleOverrides: {
+        // 16px on phones keeps iOS Safari from zooming in when a field gets focus.
+        input: ({ theme }) => ({
+          [theme.breakpoints.down('sm')]: { fontSize: 16 },
+        }),
+      },
+    },
     MuiPaper: {
       styleOverrides: {
         root: { backgroundImage: 'none' },

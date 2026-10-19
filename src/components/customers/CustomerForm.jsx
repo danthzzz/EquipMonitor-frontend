@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import InputMask from 'react-input-mask';
+import FormActions from '../common/FormActions';
 
 const EMPTY_VALUES = { cnpj: '', empresa: '' };
 
@@ -22,16 +23,18 @@ export default function CustomerForm({ initialValues, onSubmit, submitLabel = 'S
   return (
     <Box component="form" onSubmit={handleSubmit}>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={6}>
           <TextField label="Empresa" fullWidth required value={values.empresa} onChange={handleChange('empresa')} />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={6}>
           <InputMask mask="99.999.999/9999-99" value={values.cnpj} onChange={handleChange('cnpj')}>
-            {(inputProps) => <TextField {...inputProps} label="CNPJ" fullWidth required />}
+            {(inputProps) => <TextField {...inputProps} label="CNPJ" fullWidth required inputProps={{ inputMode: 'numeric' }} />}
           </InputMask>
         </Grid>
-        <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button type="submit" variant="contained" size="large">{submitLabel}</Button>
+        <Grid item xs={12}>
+          <FormActions>
+            <Button type="submit" variant="contained" size="large">{submitLabel}</Button>
+          </FormActions>
         </Grid>
       </Grid>
     </Box>

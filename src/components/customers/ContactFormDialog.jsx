@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import Dialog from '@mui/material/Dialog';
+import ResponsiveDialog from '../common/ResponsiveDialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -30,7 +30,7 @@ export default function ContactFormDialog({ open, initialValues, onClose, onSubm
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <ResponsiveDialog open={open} onClose={onClose}>
       <DialogTitle>{initialValues ? 'Editar Contato' : 'Adicionar Contato'}</DialogTitle>
       <Box component="form" onSubmit={handleSubmit}>
         <DialogContent>
@@ -38,7 +38,7 @@ export default function ContactFormDialog({ open, initialValues, onClose, onSubm
             <TextField label="Nome" fullWidth required autoFocus value={values.nome} onChange={handleChange('nome')} />
             <TextField label="Cargo" fullWidth value={values.cargo} onChange={handleChange('cargo')} />
             <InputMask mask="(99) 99999-9999" value={values.telefone} onChange={handleChange('telefone')}>
-              {(inputProps) => <TextField {...inputProps} label="Telefone" fullWidth />}
+              {(inputProps) => <TextField {...inputProps} label="Telefone" fullWidth inputProps={{ inputMode: 'tel' }} />}
             </InputMask>
             <TextField label="E-mail" type="email" fullWidth value={values.email} onChange={handleChange('email')} />
           </Stack>
@@ -48,6 +48,6 @@ export default function ContactFormDialog({ open, initialValues, onClose, onSubm
           <Button type="submit" variant="contained">Salvar</Button>
         </DialogActions>
       </Box>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

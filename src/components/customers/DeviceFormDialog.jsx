@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Dialog from '@mui/material/Dialog';
+import ResponsiveDialog from '../common/ResponsiveDialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -54,7 +54,7 @@ export default function DeviceFormDialog({ open, initialValues, onClose, onSubmi
   }) || null;
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <ResponsiveDialog open={open} onClose={onClose}>
       <DialogTitle>{initialValues ? 'Editar Device' : 'Adicionar Device'}</DialogTitle>
       <Box component="form" onSubmit={handleSubmit}>
         <DialogContent>
@@ -92,6 +92,6 @@ export default function DeviceFormDialog({ open, initialValues, onClose, onSubmi
           <Button type="submit" variant="contained">Salvar</Button>
         </DialogActions>
       </Box>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

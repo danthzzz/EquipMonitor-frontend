@@ -9,10 +9,12 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import { isPinFinalizado } from '../../utils/pinUtils';
+import { useIsPhone } from '../../hooks/useBreakpoints';
 
 export default function PinActions({ pin, onFinalize, onReset, onDelete }) {
   const navigate = useNavigate();
   const [dialog, setDialog] = useState(null); // 'finalize' | 'reset' | 'delete' | null
+  const isPhone = useIsPhone();
 
   const finalizado = isPinFinalizado(pin);
 
@@ -26,22 +28,22 @@ export default function PinActions({ pin, onFinalize, onReset, onDelete }) {
   };
 
   return (
-    <Paper sx={{ p: 3 }}>
-      <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
-        <Button startIcon={<EditIcon />} variant="outlined" onClick={() => navigate(`/update/${pin._id}`)}>
+    <Paper sx={{ p: { xs: 2, md: 3 } }}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2 }} flexWrap="wrap" useFlexGap>
+        <Button startIcon={<EditIcon />} variant="outlined" fullWidth={isPhone} onClick={() => navigate(`/update/${pin._id}`)}>
           Editar
         </Button>
         {!finalizado && (
-          <Button startIcon={<CheckCircleIcon />} variant="contained" color="success" onClick={() => setDialog('finalize')}>
+          <Button startIcon={<CheckCircleIcon />} variant="contained" color="success" fullWidth={isPhone} onClick={() => setDialog('finalize')}>
             Finalizar
           </Button>
         )}
         {finalizado && (
-          <Button startIcon={<RestartAltIcon />} variant="outlined" color="warning" onClick={() => setDialog('reset')}>
+          <Button startIcon={<RestartAltIcon />} variant="outlined" color="warning" fullWidth={isPhone} onClick={() => setDialog('reset')}>
             Resetar
           </Button>
         )}
-        <Button startIcon={<DeleteIcon />} variant="outlined" color="error" onClick={() => setDialog('delete')}>
+        <Button startIcon={<DeleteIcon />} variant="outlined" color="error" fullWidth={isPhone} onClick={() => setDialog('delete')}>
           Excluir
         </Button>
       </Stack>

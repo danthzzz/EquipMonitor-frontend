@@ -1,11 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MainLayout from '../../layouts/MainLayout';
+import PageHeader from '../../components/common/PageHeader';
 import PinForm from '../../components/pins/PinForm';
 import { usePins } from '../../hooks/usePins';
 import { useEquips } from '../../hooks/useEquips';
@@ -32,18 +30,13 @@ export default function UpdatePin() {
 
   return (
     <MainLayout>
-      <Stack direction="row" alignItems="center" spacing={1} mb={3}>
-        <IconButton onClick={() => navigate(-1)}>
-          <ArrowBackIcon />
-        </IconButton>
-        <Typography variant="h5" fontWeight={600}>Editar Equipamento</Typography>
-      </Stack>
+      <PageHeader title="Editar Equipamento" onBack={() => navigate(-1)} />
       {loading ? (
         <CircularProgress />
       ) : !pin ? (
         <Typography>Equipamento não encontrado.</Typography>
       ) : (
-        <Paper sx={{ p: 3 }}>
+        <Paper sx={{ p: { xs: 2, md: 3 } }}>
           <PinForm mode="update" submitLabel="Salvar" initialValues={pin} onSubmit={handleSubmit} equipOptions={equipOptions} />
         </Paper>
       )}

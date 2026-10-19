@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Box from '@mui/material/Box';
-import Dialog from '@mui/material/Dialog';
+import ResponsiveDialog from '../common/ResponsiveDialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -28,7 +28,7 @@ export default function EquipForm({ open, onClose, onSubmit }) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <ResponsiveDialog open={open} onClose={onClose}>
       <DialogTitle>Novo Equipamento</DialogTitle>
       <Box component="form" onSubmit={handleSubmit}>
         <DialogContent>
@@ -49,6 +49,6 @@ export default function EquipForm({ open, onClose, onSubmit }) {
           <Button type="submit" variant="contained">Adicionar</Button>
         </DialogActions>
       </Box>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

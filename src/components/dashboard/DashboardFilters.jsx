@@ -3,9 +3,9 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-export default function DashboardFilters({ availableYears, selectedYear, onYearChange }) {
+export default function DashboardFilters({ availableYears, selectedYear, onYearChange, fullWidth = false }) {
   return (
-    <FormControl size="small" sx={{ minWidth: 140 }}>
+    <FormControl size="small" fullWidth={fullWidth} sx={{ minWidth: 140 }}>
       <InputLabel>Ano</InputLabel>
       <Select value={selectedYear} label="Ano" onChange={(e) => onYearChange(e.target.value)}>
         {availableYears.map((year) => (

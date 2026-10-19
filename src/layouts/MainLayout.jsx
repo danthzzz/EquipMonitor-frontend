@@ -11,7 +11,17 @@ import Sidebar from '../components/sidebar/Sidebar';
 
 const DRAWER_WIDTH = 240;
 
-export default function MainLayout({ children, sx = {} }) {
+// Longhand paddings per breakpoint, so the Fab clearance (pb 11) is not overridden
+// by a later `p` shorthand at sm. Fab/cards are shown below md.
+export function getMainPadding(bottomSpace) {
+  return {
+    pt: { xs: 1.5, sm: 2, md: 3 },
+    px: { xs: 1.5, sm: 2, md: 3 },
+    pb: bottomSpace ? { xs: 11, sm: 11, md: 3 } : { xs: 1.5, sm: 2, md: 3 },
+  };
+}
+
+export default function MainLayout({ children, sx = {}, bottomSpace = false }) {
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -60,7 +70,8 @@ export default function MainLayout({ children, sx = {} }) {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          minWidth: 0,
+          ...getMainPadding(bottomSpace),
           mt: { xs: 7, md: 0 },
           bgcolor: 'background.default',
           minHeight: '100vh',

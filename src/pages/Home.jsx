@@ -5,23 +5,27 @@ import { useEquips } from '../hooks/useEquips';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import MainLayout from '../layouts/MainLayout';
 import PinsTable from '../components/pins/PinsTable';
+import PinCardList from '../components/pins/PinCardList';
+import PinFilterFields from '../components/pins/PinFilterFields';
 import SearchField from '../components/common/SearchField';
 import ConfirmationDialog from '../components/common/ConfirmationDialog';
-import { SEARCH_FIELDS, EQUIP_TYPES } from '../constants/filters';
+import FiltersSheet from '../components/common/FiltersSheet';
+import AddFab from '../components/common/AddFab';
+import { SEARCH_FIELDS } from '../constants/filters';
 import {
   Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
+  Chip,
   Paper,
-  Select,
   Stack,
+  Tab,
+  Tabs,
   ToggleButton,
   ToggleButtonGroup,
   Typography
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import { isPinFinalizado } from '../utils/pinUtils';
+import { Add as AddIcon, Tune as TuneIcon } from '@mui/icons-material';
+import { isPinFinalizado, isTextSearchField, getActiveFilterLabel } from '../utils/pinUtils';
+import { useIsCompact } from '../hooks/useBreakpoints';
 import { useSnackbar } from '../context';
 
 export default function Home() {
@@ -61,6 +65,8 @@ export default function Home() {
   const [status, setStatus] = useLocalStorage('status', '');
   const [nfstatus, setNfStatus] = useLocalStorage('statusnf', '');
   const [statusFilter, setStatusFilter] = useState("Em Aberto");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const isCompact = useIsCompact();
 
   const handleRowClick = (id) => {
     navigate(`/pin/${id}`);
@@ -105,6 +111,29 @@ export default function Home() {
   const handleChangeStatusFilter = (event, newValue) => {
     if (newValue !== null) {
       setStatusFilter(newValue);
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setEquipType("");
+    setNewStatus("");
+    setStatus("");
+    setNfStatus("");
+  };
+
+  const clearActiveSelectFilter = () => {
+    if (searchField === "status") setStatus("");
+    if (searchField === "statusnf") setNfStatus("");
+    if (searchField === "new") setNewStatus("");
+  };
+
+  const handleFinalize = async (pin, newStatus) => {
+    try {
+      await updateStatusDirect(pin, newStatus);
+      showSnackbar('Equipamento finalizado com sucesso.', 'success');
+    } catch {
+      showSnackbar('Não foi possível finalizar o equipamento.', 'error');
     }
   };
 
@@ -155,6 +184,96 @@ export default function Home() {
     return null;
   }
 
+  const filterFieldProps = {
+    searchField,
+    onSearchFieldChange: setSearchField,
+    equipType,
+    onEquipTypeChange: setEquipType,
+    newStatus,
+    onNewStatusChange: setNewStatus,
+    status,
+    onStatusChange: setStatus,
+    nfstatus,
+    onNfStatusChange: setNfStatus,
+    statusFilter,
+  };
+
+  const dialogs = (
+    <>
+        <ConfirmationDialog
+          open={showDeleteConfirmation}
+          title="Confirmar Exclusão"
+          message="Deseja realmente excluir este Equipamento? Esta ação não pode ser desfeita."
+          onClose={() => setShowDeleteConfirmation(false)}
+          onConfirm={handleConfirmDelete}
+          confirmColor="error"
+          confirmText="Sim, Excluir"
+        />
+
+        <ConfirmationDialog
+          open={showResetConfirmation}
+          title="Confirmar Reset"
+          message="Você recebeu este equipamento novamente? Isso irá resetar o status para 'Recebido' e limpará os dados."
+          onClose={() => setShowResetConfirmation(false)}
+          onConfirm={handleConfirmReset}
+          confirmColor="warning"
+          confirmText="Sim, Resetar"
+        />
+    </>
+  );
+
+  if (isCompact) {
+    const activeFilterLabel = getActiveFilterLabel(searchField, { status, nfstatus, newStatus });
+    const searchFieldLabel = SEARCH_FIELDS.find((f) => f.value === searchField)?.label || '';
+
+    return (
+      <MainLayout bottomSpace>
+        <Typography variant="h5" component="h1" fontWeight={600} mb={1.5} sx={{ fontSize: '1.15rem' }}>
+          Olá, {currentUser?.name || 'Usuário'}
+        </Typography>
+
+        <Tabs value={statusFilter} onChange={handleChangeStatusFilter} variant="fullWidth" sx={{ mb: 1.5 }}>
+          <Tab value="Em Aberto" label="EM ABERTO" />
+          <Tab value="Finalizado" label="FINALIZADO" />
+        </Tabs>
+
+        <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
+          {isTextSearchField(searchField) ? (
+            <SearchField
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={`Pesquisar por ${searchFieldLabel}…`}
+              sx={{ flexGrow: 1 }}
+            />
+          ) : activeFilterLabel ? (
+            <Chip label={activeFilterLabel} color="primary" onClick={() => setFiltersOpen(true)} onDelete={clearActiveSelectFilter} sx={{ minWidth: 0 }} />
+          ) : null}
+          <Button variant="outlined" startIcon={<TuneIcon />} onClick={() => setFiltersOpen(true)} sx={{ ml: 'auto', flexShrink: 0 }}>
+            Filtros
+          </Button>
+        </Stack>
+
+        <PinCardList
+          pins={filteredPins}
+          loading={loading}
+          statusFilter={statusFilter}
+          onOpen={handleRowClick}
+          onEdit={(pin) => navigate(`/update/${pin._id}`)}
+          onFinalize={handleFinalize}
+          onReset={handleOpenReset}
+          onDelete={handleOpenDelete}
+        />
+
+        <FiltersSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} onClear={handleClearFilters}>
+          <PinFilterFields {...filterFieldProps} fullWidth />
+        </FiltersSheet>
+
+        <AddFab to="/create" />
+        {dialogs}
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout sx={{ maxHeight: '100vh', overflow: 'hidden' }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
@@ -177,97 +296,9 @@ export default function Home() {
               spacing={1}
 
             >
-              <FormControl size="small" sx={{ minWidth: 210 }}>
-                <InputLabel>Buscar Por</InputLabel>
-                <Select
-                  value={searchField}
-                  label="Buscar Por"
-                  onChange={(e) => setSearchField(e.target.value)}
-                >
-                  {SEARCH_FIELDS.map(f => (
-                    <MenuItem key={f.value} value={f.value}>{f.label}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <PinFilterFields {...filterFieldProps} />
 
-              {searchField === "equipament" && (
-                <FormControl size="small" sx={{ minWidth: 120 }}>
-                  <InputLabel>Tipo</InputLabel>
-                  <Select
-                    value={equipType}
-                    label="Tipo"
-                    onChange={(e) => setEquipType(e.target.value)}
-                  >
-                    {EQUIP_TYPES.map(t => (
-                      <MenuItem key={t.value} value={t.value}>{t.label}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-
-              {searchField === "new" && (
-                <FormControl size="small" sx={{ minWidth: 120 }}>
-                  <InputLabel>Novo?</InputLabel>
-                  <Select
-                    value={newStatus}
-                    label="Novo?"
-                    onChange={(e) => setNewStatus(e.target.value)}
-                  >
-                    <MenuItem value="">Todos</MenuItem>
-                    <MenuItem value="Sim">Sim</MenuItem>
-                    <MenuItem value="Não">Não</MenuItem>
-                  </Select>
-                </FormControl>
-              )}
-
-              {searchField === "status" && (
-                <FormControl size="small" sx={{ minWidth: 200 }}>
-                  <InputLabel>Status</InputLabel>
-                  {statusFilter === "Em Aberto" ? (
-                    <Select
-                      value={status}
-                      label="Status"
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      <MenuItem value="">Todos</MenuItem>
-                      <MenuItem value="Recebido">Recebido</MenuItem>
-                      <MenuItem value="Calibrado">Calibrado</MenuItem>
-                      <MenuItem value="Recusado na Calibração">Recusado na Calibração</MenuItem>
-                      <MenuItem value="Em Reparo">Em Reparo</MenuItem>
-                      <MenuItem value="Enviado para Alemanha">Enviado para Alemanha</MenuItem>
-                      <MenuItem value="Expedição">Expedição</MenuItem>
-                    </Select>
-                  ) : (
-                    <Select
-                      value={status}
-                      label="Status"
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      <MenuItem value="">Todos</MenuItem>
-                      <MenuItem value="Devolução sem Reparo">Devolução sem Reparo</MenuItem>
-                      <MenuItem value="TradeIN">TradeIN</MenuItem>
-                      <MenuItem value="Contabilizados">Contabilizados</MenuItem>
-                    </Select>
-                  )}
-                </FormControl>
-              )}
-
-              {searchField === "statusnf" && (
-                <FormControl size="small" sx={{ minWidth: 200 }}>
-                  <InputLabel>Status NF</InputLabel>
-                  <Select
-                    value={nfstatus}
-                    label="Status NF"
-                    onChange={(e) => setNfStatus(e.target.value)}
-                  >
-                    <MenuItem value="">Todos</MenuItem>
-                    <MenuItem value="Aguardando Correção">Aguardando Correção</MenuItem>
-                    <MenuItem value="Liberado">Liberado</MenuItem>
-                  </Select>
-                </FormControl>
-              )}
-
-              {searchField !== "new" && searchField !== "status" && searchField !== "statusnf" && (
+              {isTextSearchField(searchField) && (
                 <SearchField
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -308,36 +339,11 @@ export default function Home() {
           onRowClick={handleRowClick}
           onDelete={handleOpenDelete}
           onReset={handleOpenReset}
-          onFinalize={async (pin, newStatus) => {
-            try {
-              await updateStatusDirect(pin, newStatus);
-              showSnackbar('Equipamento finalizado com sucesso.', 'success');
-            } catch {
-              showSnackbar('Não foi possível finalizar o equipamento.', 'error');
-            }
-          }}
+          onFinalize={handleFinalize}
         />
       </Paper>
 
-      <ConfirmationDialog
-        open={showDeleteConfirmation}
-        title="Confirmar Exclusão"
-        message="Deseja realmente excluir este Equipamento? Esta ação não pode ser desfeita."
-        onClose={() => setShowDeleteConfirmation(false)}
-        onConfirm={handleConfirmDelete}
-        confirmColor="error"
-        confirmText="Sim, Excluir"
-      />
-
-      <ConfirmationDialog
-        open={showResetConfirmation}
-        title="Confirmar Reset"
-        message="Você recebeu este equipamento novamente? Isso irá resetar o status para 'Recebido' e limpará os dados."
-        onClose={() => setShowResetConfirmation(false)}
-        onConfirm={handleConfirmReset}
-        confirmColor="warning"
-        confirmText="Sim, Resetar"
-      />
+      {dialogs}
     </MainLayout>
   );
 }

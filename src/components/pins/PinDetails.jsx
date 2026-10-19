@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import StatusChip from '../common/StatusChip';
-import devices from '../../data/devices.json';
+import { getPinDeviceCode } from '../../utils/pinUtils';
 import { NF_STATUS_SEMANTIC } from '../../constants/colors';
 
 function Field({ label, value }) {
@@ -16,16 +16,11 @@ function Field({ label, value }) {
 }
 
 export default function PinDetails({ pin }) {
-  
-const device = Object.values(devices)
-  .flat()
-  .find(item => item.modelo === pin.equipament);
-
-const codigo = device?.codigo;
+  const codigo = getPinDeviceCode(pin.equipament);
 
   return (
-    <Paper sx={{ p: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+    <Paper sx={{ p: { xs: 2, md: 3 } }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2} spacing={1} flexWrap="wrap" useFlexGap sx={{ overflowWrap: 'anywhere' }}>
         <Typography variant="h6">{pin.equipament}</Typography>
         <StatusChip status={pin.status} />
       </Stack>

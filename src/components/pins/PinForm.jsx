@@ -7,6 +7,7 @@ import { useCustomers } from '../../hooks/useCustomers';
 import { useDevices } from '../../hooks/useDevices';
 import PinClienteNfFields from './PinClienteNfFields';
 import PinEquipamentoFields from './PinEquipamentoFields';
+import FormActions from '../common/FormActions';
 
 const EMPTY_VALUES = {
   equipament: '',
@@ -81,11 +82,11 @@ export default function PinForm({ initialValues, onSubmit, submitLabel = 'Salvar
           mode={mode}
         />
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <FormActions>
           <Button type="submit" variant="contained" size="large">
             {submitLabel}
           </Button>
-        </Box>
+        </FormActions>
       </Stack>
     </Box>
   );

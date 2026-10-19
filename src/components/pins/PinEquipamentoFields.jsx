@@ -65,14 +65,14 @@ export default function PinEquipamentoFields({
           {title}
         </Typography>
         {onRemove && (
-          <Button size="small" color="error" onClick={onRemove}>
+          <Button size="small" color="error" onClick={onRemove} sx={{ flexShrink: 0 }}>
             Remover Equipamento
           </Button>
         )}
       </Stack>
       <Divider sx={{ mb: 2 }} />
       <Grid container spacing={2}>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} sm={8}>
           <FormControl fullWidth required disabled={!customerId}>
             <InputLabel>Device</InputLabel>
             <Select value={values.deviceId} label="Device" onChange={handleDeviceChange}>
@@ -82,7 +82,7 @@ export default function PinEquipamentoFields({
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={4}>
           <Button
             variant="outlined"
             fullWidth
@@ -93,7 +93,7 @@ export default function PinEquipamentoFields({
             Novo Device
           </Button>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={12} md={6}>
           <Autocomplete
             freeSolo
             options={equipOptions.map((o) => o.label)}
@@ -102,10 +102,10 @@ export default function PinEquipamentoFields({
             renderInput={(params) => <TextField {...params} label="Equipamento" required fullWidth />}
           />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <TextField label="Série" fullWidth required value={values.serie} onChange={handleChange('serie')} />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <FormControl fullWidth required>
             <InputLabel>Status</InputLabel>
             <Select value={values.status} label="Status" onChange={handleChange('status')}>
@@ -115,7 +115,7 @@ export default function PinEquipamentoFields({
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <FormControl fullWidth>
             <InputLabel>Novo?</InputLabel>
             <Select value={values.itsNew} label="Novo?" onChange={handleChange('itsNew')}>
@@ -125,14 +125,14 @@ export default function PinEquipamentoFields({
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <TextField label="CTF 1" fullWidth value={values.ctf1} onChange={handleChange('ctf1')} />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <TextField label="CTF 2" fullWidth value={values.ctf2} onChange={handleChange('ctf2')} />
         </Grid>
         {mode === 'update' && (
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
               label="Data de Finalização"
               type="date"
