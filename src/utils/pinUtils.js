@@ -27,7 +27,8 @@ export const getPinAlertLevel = (pin) => {
 export const getPinRowActions = (pin, statusFilter) => {
   const finalizado = isPinFinalizado(pin);
   const actions = ['edit'];
-  if (statusFilter === 'Em Aberto' && !finalizado) actions.push('finalize');
+  // Only equipment already in Expedição (exit photos taken) can be finalized.
+  if (statusFilter === 'Em Aberto' && pin?.status === 'Expedição') actions.push('finalize');
   if (finalizado) actions.push('reset');
   actions.push('delete');
   return actions;
@@ -48,7 +49,7 @@ export const getRowSx = (pin, theme) => {
   return {};
 };
 
-const SELECT_SEARCH_FIELDS = ['new', 'status', 'statusnf'];
+const SELECT_SEARCH_FIELDS = ['new', 'status', 'statusnf', 'fotosPendentes'];
 
 // "Buscar por" modes that use a free-text box (the others use a select).
 export const isTextSearchField = (searchField) => !SELECT_SEARCH_FIELDS.includes(searchField);
@@ -58,5 +59,16 @@ export const getActiveFilterLabel = (searchField, { status, nfstatus, newStatus 
   if (searchField === 'status' && status) return `Status: ${status}`;
   if (searchField === 'statusnf' && nfstatus) return `Status NF: ${nfstatus}`;
   if (searchField === 'new' && newStatus) return `Novo?: ${newStatus}`;
+  if (searchField === 'fotosPendentes') return 'Fotos pendentes';
   return null;
 };
+
+// Badge for pins whose photos still need to be taken. Legacy pins (no field) are never pending.
+export const getPendingPhotoLabel = (pin) => {
+  if (pin?.fotosEntrada === 'pendente') return 'Fotos pendentes';
+  if (pin?.fotosSaida === 'pendente') return 'Fotos de saída pendentes';
+  return null;
+};
+
+// "Finalizado" is only offered for pins already in Expedição (or already finalized).
+export const canOfferFinalizado = (currentStatus) => ['Expedição', 'Finalizado'].includes(currentStatus);

@@ -21,6 +21,9 @@ export const PIN_STATUS_OPTIONS = [
   { value: PIN_STATUS.EXPEDICAO, label: "Expedição" }
 ];
 
+// A pin can't be created already in Expedição (exit photos are taken when it gets there).
+export const PIN_STATUS_CREATE_OPTIONS = PIN_STATUS_OPTIONS.filter((opt) => opt.value !== PIN_STATUS.EXPEDICAO);
+
 export const PIN_STATUS_UPDATE_OPTIONS = [
   ...PIN_STATUS_OPTIONS,
   { value: PIN_STATUS.FINALIZADO, label: "Finalizado" }

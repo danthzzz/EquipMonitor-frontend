@@ -6,7 +6,7 @@ import Dashboard from '../Dashboard';
 
 vi.mock('../../hooks/usePins', () => ({
   usePins: () => ({
-    pins: [{ _id: 'p1', equipament: 'VIBXPERT II', serie: 'S1', cliente: 'ACME', status: 'Em Reparo', updatedAt: new Date().toISOString() }],
+    pins: [{ _id: 'p1', equipament: 'VIBXPERT II', serie: 'S1', cliente: 'ACME', status: 'Expedição', updatedAt: new Date().toISOString() }],
     loading: false,
     deletePin: vi.fn(),
     resetPinStatus: vi.fn(),

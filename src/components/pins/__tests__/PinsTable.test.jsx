@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../../../test/renderWithProviders';
 import PinsTable from '../PinsTable';
 
-const pin = { _id: '1', equipament: 'VIBXPERT II', serie: 'S1', cliente: 'ACME', status: 'Em Reparo' };
+const pin = { _id: '1', equipament: 'VIBXPERT II', serie: 'S1', cliente: 'ACME', status: 'Expedição' };
 
 describe('PinsTable (desktop) after refactor', () => {
   it('keeps the device code column and the open-pin actions', async () => {

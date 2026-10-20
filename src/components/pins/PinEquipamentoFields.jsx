@@ -11,7 +11,8 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { PIN_STATUS_OPTIONS, PIN_STATUS_UPDATE_OPTIONS, YES_NO_OPTIONS } from '../../constants/status';
+import { PIN_STATUS_CREATE_OPTIONS, PIN_STATUS_UPDATE_OPTIONS, YES_NO_OPTIONS } from '../../constants/status';
+import PhotoField from '../photos/PhotoField';
 import DeviceFormDialog from '../customers/DeviceFormDialog';
 
 export default function PinEquipamentoFields({
@@ -24,9 +25,12 @@ export default function PinEquipamentoFields({
   mode = 'create',
   title = 'EQUIPAMENTO',
   onRemove,
+  allowFinalizado = true,
 }) {
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
-  const statusOptions = mode === 'update' ? PIN_STATUS_UPDATE_OPTIONS : PIN_STATUS_OPTIONS;
+  const statusOptions = mode === 'update'
+    ? PIN_STATUS_UPDATE_OPTIONS.filter((opt) => allowFinalizado || opt.value !== 'Finalizado')
+    : PIN_STATUS_CREATE_OPTIONS;
 
   const handleChange = (field) => (event) => {
     onValuesChange({ [field]: event.target.value });
@@ -153,6 +157,15 @@ export default function PinEquipamentoFields({
             onChange={handleChange('OBS')}
           />
         </Grid>
+        {mode === 'create' && (
+          <Grid item xs={12}>
+            <PhotoField
+              title="Fotos de entrada"
+              photos={values.fotos || []}
+              onChange={(fotos) => onValuesChange({ fotos })}
+            />
+          </Grid>
+        )}
       </Grid>
 
       <DeviceFormDialog

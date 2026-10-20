@@ -14,7 +14,7 @@ import { useSnackbar } from '../../context';
 export default function SinglePin() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { pins, loading, deletePin, resetPinStatus, updateStatusDirect } = usePins();
+  const { pins, loading, deletePin, resetPinStatus, updateStatusDirect, refresh } = usePins();
   const { showSnackbar } = useSnackbar();
 
   const pin = pins.find((p) => p._id === id);
@@ -61,7 +61,7 @@ export default function SinglePin() {
           </Grid>
           <Grid item xs={12} md={5}>
             <Stack spacing={{ xs: 2, md: 3 }}>
-              <PinActions pin={pin} onFinalize={handleFinalize} onReset={handleReset} onDelete={handleDelete} />
+              <PinActions pin={pin} onFinalize={handleFinalize} onReset={handleReset} onDelete={handleDelete} onRefresh={refresh} />
               <PinHistory pin={pin} />
             </Stack>
           </Grid>

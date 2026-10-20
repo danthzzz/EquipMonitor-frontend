@@ -5,7 +5,7 @@ import Home from '../Home';
 
 const pins = [
   { _id: '1', equipament: 'VIBXPERT II', serie: 'S1', cliente: 'ACME', status: 'Em Reparo', updatedAt: new Date().toISOString() },
-  { _id: '2', equipament: 'OPTALIGN smart', serie: 'S2', cliente: 'Beta', status: 'Recebido', updatedAt: new Date().toISOString() },
+  { _id: '2', equipament: 'OPTALIGN smart', serie: 'S2', cliente: 'Beta', status: 'Recebido', fotosEntrada: 'pendente', updatedAt: new Date().toISOString() },
 ];
 
 vi.mock('../../hooks/usePins', () => ({
@@ -85,5 +85,15 @@ describe('Home filter chip', () => {
     const chip = screen.getByText('Status: Recusado na Calibração').closest('.MuiChip-root');
     // jsdom reports the unitless value
     expect(getComputedStyle(chip).minWidth).toBe('0');
+  });
+});
+
+describe('Home pending-photos filter', () => {
+  it('Buscar por Fotos pendentes lists only pins with pending photos', () => {
+    localStorage.setItem('searchField', JSON.stringify('fotosPendentes'));
+    renderWithProviders(<Home />, { width: 375 });
+    expect(screen.queryByText('VIBXPERT II')).toBeNull();
+    expect(screen.getByText('OPTALIGN smart')).toBeInTheDocument();
+    expect(screen.getAllByText('Fotos pendentes').length).toBeGreaterThan(0);
   });
 });

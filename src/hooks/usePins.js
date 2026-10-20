@@ -78,6 +78,7 @@ export function usePins() {
       serie: pin.serie,
       cliente: pin.cliente,
       status: "Recebido",
+      novaPassagem: true,
       nf: "",
       statusNf: "",
       PDC: "",

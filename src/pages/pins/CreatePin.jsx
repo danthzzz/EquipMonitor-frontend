@@ -1,11 +1,12 @@
 // frontend1/src/pages/pins/CreatePin.jsx
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import FormHelperText from '@mui/material/FormHelperText';
 import AddIcon from '@mui/icons-material/Add';
 import MainLayout from '../../layouts/MainLayout';
 import PageHeader from '../../components/common/PageHeader';
@@ -18,6 +19,9 @@ import { useCustomers } from '../../hooks/useCustomers';
 import { useDevices } from '../../hooks/useDevices';
 import { useSnackbar } from '../../context';
 import { useIsPhone } from '../../hooks/useBreakpoints';
+import { MIN_PHOTOS } from '../../components/photos/PhotoField';
+import UploadProgressDialog from '../../components/photos/UploadProgressDialog';
+import { uploadPinPhotos } from '../../services/photoService';
 
 function getNextOS(pins) {
   const numericOS = pins.map((p) => Number(p.OS)).filter((n) => Number.isFinite(n));
@@ -35,6 +39,7 @@ const EMPTY_EQUIPAMENTO = {
   status: 'Recebido',
   itsNew: 'Não',
   OBS: '',
+  fotos: [],
 };
 
 export default function CreatePin() {
@@ -56,6 +61,10 @@ export default function CreatePin() {
     OS: nextOS,
   });
   const [equipamentos, setEquipamentos] = useState([{ ...EMPTY_EQUIPAMENTO }]);
+  const [progress, setProgress] = useState(null); // { message, value } while uploading
+  const [submitting, setSubmitting] = useState(false);
+  // A ref, not just state: a double tap fires the second submit before React re-renders.
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     setClienteNf((prev) => (prev.OS === '' ? { ...prev, OS: nextOS } : prev));
@@ -93,26 +102,51 @@ export default function CreatePin() {
     setEquipamentos((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const missingPhotos = equipamentos.some((equipamento) => equipamento.fotos.length < MIN_PHOTOS);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (missingPhotos || submittingRef.current) return;
+    submittingRef.current = true;
+    setSubmitting(true);
     let createdCount = 0;
+    let pendingCount = 0;
     try {
-      for (const equipamento of equipamentos) {
-        await createPin({ ...clienteNf, ...equipamento });
+      for (const [index, equipamento] of equipamentos.entries()) {
+        const { fotos, ...pinData } = equipamento;
+        const created = await createPin({ ...clienteNf, ...pinData });
         createdCount += 1;
+        const label = `Equipamento ${index + 1} de ${equipamentos.length}`;
+        setProgress({ message: `${label} — enviando fotos…`, value: 0 });
+        const result = await uploadPinPhotos(created._id, 'entrada', fotos, (done, total) =>
+          setProgress({ message: `${label} — foto ${done} de ${total}`, value: (done / total) * 100 })
+        );
+        if (!result.ok) pendingCount += 1;
       }
-      showSnackbar(
-        equipamentos.length > 1
-          ? `${createdCount} equipamentos cadastrados com sucesso.`
-          : 'Equipamento cadastrado com sucesso.',
-        'success'
-      );
+      setProgress(null);
+      if (pendingCount > 0) {
+        showSnackbar(
+          `${createdCount} equipamento(s) cadastrado(s), mas as fotos ficaram pendentes. Tire as fotos novamente quando a conexão voltar.`,
+          'warning'
+        );
+      } else {
+        showSnackbar(
+          equipamentos.length > 1
+            ? `${createdCount} equipamentos cadastrados com sucesso.`
+            : 'Equipamento cadastrado com sucesso.',
+          'success'
+        );
+      }
       navigate('/home');
     } catch {
+      setProgress(null);
       showSnackbar(
         `Falha ao cadastrar. ${createdCount} de ${equipamentos.length} equipamento(s) foram criados antes do erro.`,
         'error'
       );
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
     }
   };
 
@@ -153,14 +187,19 @@ export default function CreatePin() {
 
             <Divider />
 
+            {missingPhotos && (
+              <FormHelperText error>Tire pelo menos 5 fotos de cada equipamento</FormHelperText>
+            )}
+
             <FormActions>
-              <Button type="submit" variant="contained" size="large">
+              <Button type="submit" variant="contained" size="large" disabled={missingPhotos || submitting}>
                 Cadastrar
               </Button>
             </FormActions>
           </Stack>
         </Box>
       </Paper>
+      <UploadProgressDialog open={Boolean(progress)} message={progress?.message} value={progress?.value} />
     </MainLayout>
   );
 }

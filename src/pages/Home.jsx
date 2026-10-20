@@ -24,7 +24,7 @@ import {
   Typography
 } from '@mui/material';
 import { Add as AddIcon, Tune as TuneIcon } from '@mui/icons-material';
-import { isPinFinalizado, isTextSearchField, getActiveFilterLabel } from '../utils/pinUtils';
+import { isPinFinalizado, isTextSearchField, getActiveFilterLabel, getPendingPhotoLabel } from '../utils/pinUtils';
 import { useIsCompact } from '../hooks/useBreakpoints';
 import { useSnackbar } from '../context';
 
@@ -126,6 +126,7 @@ export default function Home() {
     if (searchField === "status") setStatus("");
     if (searchField === "statusnf") setNfStatus("");
     if (searchField === "new") setNewStatus("");
+    if (searchField === "fotosPendentes") setSearchField("equipament");
   };
 
   const handleFinalize = async (pin, newStatus) => {
@@ -140,7 +141,7 @@ export default function Home() {
   const filteredPins = useMemo(() => {
     return pins
       .filter((pin) => {
-        const matchesSearch = !searchTerm || String(pin[searchField] || "").toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = !isTextSearchField(searchField) || !searchTerm || String(pin[searchField] || "").toLowerCase().includes(searchTerm.toLowerCase());
 
         const effectiveEquipType = searchField === "equipament" ? equipType : "";
         const equip = equips.find((equip) => equip.modelo === pin.equipament);
@@ -152,10 +153,11 @@ export default function Home() {
           pin.status === status ||
           (status === "Contabilizados" && pin.status === "Finalizado" && pin.itsNew === "Não");
         const matchesNFStatus = searchField !== "statusnf" || !nfstatus || pin.statusNf === nfstatus;
+        const matchesPendingPhotos = searchField !== "fotosPendentes" || getPendingPhotoLabel(pin) !== null;
 
         const openPins = statusFilter === 'Em Aberto' ? !isPinFinalizado(pin) : isPinFinalizado(pin);
 
-        return matchesSearch && matchesEquipType && matchesNewStatus && matchesStatus && matchesNFStatus && openPins;
+        return matchesSearch && matchesEquipType && matchesNewStatus && matchesStatus && matchesNFStatus && matchesPendingPhotos && openPins;
       })
       .sort((a, b) => {
         const convertToDate = (dateStr) => dateStr ? new Date(dateStr) : new Date(0);

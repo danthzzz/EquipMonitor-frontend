@@ -6,7 +6,8 @@ export const SEARCH_FIELDS = [
   { value: "OS", label: "Ordem de Serviço" },
   { value: "nf", label: "Nota Fiscal" },
   { value: "statusnf", label: "Status NF" },
-  { value: "new", label: "Novo?" }
+  { value: "new", label: "Novo?" },
+  { value: "fotosPendentes", label: "Fotos pendentes" }
 ];
 
 export const EQUIP_TYPES = [

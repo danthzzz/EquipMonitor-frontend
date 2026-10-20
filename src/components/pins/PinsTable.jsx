@@ -8,12 +8,14 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import StatusChip from '../common/StatusChip';
 import Loading from '../common/Loading';
 import EmptyState from '../common/EmptyState';
-import { getRowSx, getPinDeviceCode, getPinRowActions } from '../../utils/pinUtils';
+import { getRowSx, getPinDeviceCode, getPinRowActions, getPendingPhotoLabel } from '../../utils/pinUtils';
 import { formatDate } from '../../utils/dateUtils';
 import { PIN_ACTION_META, getPinActionHandler } from './pinActionMeta';
 
@@ -73,7 +75,10 @@ export default function PinsTable({ pins, loading, statusFilter, onRowClick, onD
                   <TableCell>{pin.nf}</TableCell>
                   <TableCell>{pin.OS || '—'}</TableCell>
                   <TableCell>
-                    <StatusChip status={pin.status} />
+                    <Stack spacing={0.5} alignItems="flex-start">
+                      <StatusChip status={pin.status} />
+                      {getPendingPhotoLabel(pin) && <Chip size="small" color="warning" label={getPendingPhotoLabel(pin)} />}
+                    </Stack>
                   </TableCell>
                   <TableCell>{formatDate(pin.entryDate)}</TableCell>
                   <TableCell align="right" onClick={(e) => e.stopPropagation()}>

@@ -48,13 +48,20 @@ describe('PinCard', () => {
     expect(h.onOpen).not.toHaveBeenCalled();
   });
 
-  it('lists Finalizar for open pins in Em Aberto and finalizes with Finalizado', async () => {
+  it('lists Finalizar for pins in Expedição and finalizes with Finalizado', async () => {
     const h = handlers();
-    renderWithProviders(<PinCard pin={basePin} statusFilter="Em Aberto" {...h} />, { width: 375 });
+    const pin = { ...basePin, status: 'Expedição' };
+    renderWithProviders(<PinCard pin={pin} statusFilter="Em Aberto" {...h} />, { width: 375 });
     await userEvent.click(screen.getByRole('button', { name: 'Ações' }));
     expect(screen.queryByRole('menuitem', { name: 'Resetar' })).toBeNull();
     await userEvent.click(screen.getByRole('menuitem', { name: 'Finalizar' }));
-    expect(h.onFinalize).toHaveBeenCalledWith(basePin, 'Finalizado');
+    expect(h.onFinalize).toHaveBeenCalledWith(pin, 'Finalizado');
+  });
+
+  it('does not offer Finalizar before Expedição', async () => {
+    renderWithProviders(<PinCard pin={basePin} statusFilter="Em Aberto" {...handlers()} />, { width: 375 });
+    await userEvent.click(screen.getByRole('button', { name: 'Ações' }));
+    expect(screen.queryByRole('menuitem', { name: 'Finalizar' })).toBeNull();
   });
 
   it('lists Resetar for finished pins', async () => {

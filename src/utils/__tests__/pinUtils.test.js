@@ -1,10 +1,12 @@
-import { getPinRowActions, getPinAlertLevel, getPinDeviceCode, getActiveFilterLabel, isTextSearchField } from '../pinUtils';
+import { getPinRowActions, getPinAlertLevel, getPinDeviceCode, getActiveFilterLabel, isTextSearchField, getPendingPhotoLabel, canOfferFinalizado } from '../pinUtils';
+import { PIN_STATUS_CREATE_OPTIONS } from '../../constants/status';
 
 const daysAgo = (n) => new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString();
 
 describe('getPinRowActions', () => {
-  it('offers finalize for open pins in the Em Aberto view', () => {
-    expect(getPinRowActions({ status: 'Em Reparo' }, 'Em Aberto')).toEqual(['edit', 'finalize', 'delete']);
+  it('offers finalize only for pins in Expedição in the Em Aberto view', () => {
+    expect(getPinRowActions({ status: 'Expedição' }, 'Em Aberto')).toEqual(['edit', 'finalize', 'delete']);
+    expect(getPinRowActions({ status: 'Em Reparo' }, 'Em Aberto')).toEqual(['edit', 'delete']);
   });
   it('offers reset for finished pins', () => {
     expect(getPinRowActions({ status: 'Finalizado' }, 'Finalizado')).toEqual(['edit', 'reset', 'delete']);
@@ -65,5 +67,36 @@ describe('isTextSearchField', () => {
   });
   it('is true for text modes', () => {
     expect(isTextSearchField('cliente')).toBe(true);
+  });
+});
+
+describe('getPendingPhotoLabel', () => {
+  it('flags pending entry photos', () => {
+    expect(getPendingPhotoLabel({ fotosEntrada: 'pendente' })).toBe('Fotos pendentes');
+  });
+  it('flags pending exit photos', () => {
+    expect(getPendingPhotoLabel({ fotosEntrada: 'ok', fotosSaida: 'pendente' })).toBe('Fotos de saída pendentes');
+  });
+  it('entry wins when both are pending', () => {
+    expect(getPendingPhotoLabel({ fotosEntrada: 'pendente', fotosSaida: 'pendente' })).toBe('Fotos pendentes');
+  });
+  it('is null for legacy and complete pins', () => {
+    expect(getPendingPhotoLabel({})).toBeNull();
+    expect(getPendingPhotoLabel({ fotosEntrada: 'ok', fotosSaida: 'ok' })).toBeNull();
+  });
+});
+
+describe('canOfferFinalizado', () => {
+  it('only from Expedição or Finalizado', () => {
+    expect(canOfferFinalizado('Expedição')).toBe(true);
+    expect(canOfferFinalizado('Finalizado')).toBe(true);
+    expect(canOfferFinalizado('Em Reparo')).toBe(false);
+  });
+});
+
+describe('PIN_STATUS_CREATE_OPTIONS', () => {
+  it('does not offer Expedição', () => {
+    expect(PIN_STATUS_CREATE_OPTIONS.map((o) => o.value)).not.toContain('Expedição');
+    expect(PIN_STATUS_CREATE_OPTIONS.map((o) => o.value)).toContain('Recebido');
   });
 });

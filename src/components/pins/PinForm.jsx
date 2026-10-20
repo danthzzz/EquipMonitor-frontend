@@ -8,6 +8,8 @@ import { useDevices } from '../../hooks/useDevices';
 import PinClienteNfFields from './PinClienteNfFields';
 import PinEquipamentoFields from './PinEquipamentoFields';
 import FormActions from '../common/FormActions';
+import PhotoField, { MIN_PHOTOS } from '../photos/PhotoField';
+import { canOfferFinalizado } from '../../utils/pinUtils';
 
 const EMPTY_VALUES = {
   equipament: '',
@@ -29,8 +31,13 @@ const EMPTY_VALUES = {
   finishDate: '',
 };
 
-export default function PinForm({ initialValues, onSubmit, submitLabel = 'Salvar', mode = 'create', equipOptions = [] }) {
+export default function PinForm({ initialValues, onSubmit, submitLabel = 'Salvar', mode = 'create', equipOptions = [], submitting = false }) {
   const [values, setValues] = useState({ ...EMPTY_VALUES, ...initialValues });
+  const [fotosSaida, setFotosSaida] = useState([]);
+  const initialStatus = initialValues?.status;
+  // Exit photos are required when this save moves the pin into Expedição.
+  const needsExitPhotos = mode === 'update' && values.status === 'Expedição' && initialStatus !== 'Expedição';
+  const missingExitPhotos = needsExitPhotos && fotosSaida.length < MIN_PHOTOS;
 
   const { customers } = useCustomers();
   const { devices, createDevice } = useDevices(values.customerId || null);
@@ -58,7 +65,8 @@ export default function PinForm({ initialValues, onSubmit, submitLabel = 'Salvar
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(values);
+    if (missingExitPhotos) return;
+    onSubmit(values, { fotosSaida: needsExitPhotos ? fotosSaida : [] });
   };
 
   return (
@@ -80,10 +88,15 @@ export default function PinForm({ initialValues, onSubmit, submitLabel = 'Salvar
           customerId={values.customerId}
           equipOptions={equipOptions}
           mode={mode}
+          allowFinalizado={canOfferFinalizado(initialStatus)}
         />
 
+        {needsExitPhotos && (
+          <PhotoField title="Fotos de saída" photos={fotosSaida} onChange={setFotosSaida} />
+        )}
+
         <FormActions>
-          <Button type="submit" variant="contained" size="large">
+          <Button type="submit" variant="contained" size="large" disabled={missingExitPhotos || submitting}>
             {submitLabel}
           </Button>
         </FormActions>
